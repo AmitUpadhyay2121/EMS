@@ -1,0 +1,66 @@
+﻿@page "/Delete/{Id}"
+@using Election.Data
+@inject CandidatesController _Service
+@inject NavigationManager NavigationManager
+
+<h2>Delete Candidate</h2>
+<hr />
+<h3>Are you sure want to delete this?</h3>
+<form>
+    <div class="row">
+        <div class=" col-md-8">
+            <div class="form-group">
+                <label>Candidate Id:</label>
+                <label>@obj.CandidateId</label>
+            </div>
+            <div class="form-group">
+                <label>Candidate Name:</label>
+                <label>@obj.CandidateName</label>
+            </div>
+            <div class="form-group">
+                <label>Admission Number:</label>
+                <label>@obj.AdmNumber</label>
+            </div>
+            <div class="form-group">
+                <label>Class:</label>
+                <label>@obj.Class</label>
+            </div>
+            <div class="form-group">
+                <label>Section:</label>
+                <label>@obj.Section</label>
+            </div>
+            <div class="form-group">
+                <label>House:</label>
+                <label>@obj.House</label>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-danger" @onclick="@DeleteCandidate" value="Delete" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    Candidate obj = new Candidate();
+    protected override async Task OnInitializedAsync()
+    {
+        obj = await Task.Run(() => _Service.GetCandidateAsync(Convert.ToInt32(Id)));
+    }
+    protected async void DeleteCandidate()
+    {
+        await _Service.DeleteCandidateAsync(obj);
+        NavigationManager.NavigateTo("Candidates");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("Employees");
+    }
+}

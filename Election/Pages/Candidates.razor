@@ -1,0 +1,66 @@
+﻿@page "/Candidates"
+@using Election.Data
+@inject Data.ElectionContext _context
+@inject Data.CandidatesController _service
+
+
+<h3>Candidates Info</h3>
+
+<a class="btn nav-link btn-info oi oi-pencil" href="AddCandidate" aria-hidden="true">
+    Add Candidate
+</a> &nbsp;&nbsp;
+
+<hr />
+
+@if (_Candidates is null)
+{
+    <p><em>Loading... !</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Candidate Name</th>
+                <th>Class</th>
+                <th>Section</th>
+                <th>Admission Number</th>
+                <th>House</th>
+                <th>Contesting for</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var emp in _Candidates)
+            {
+                <tr>
+                    <td>@emp.CandidateName</td>
+                    <td>@emp.Class</td>
+                    <td>@emp.Section</td>
+                    <td>@emp.AdmNumber</td>
+                    <td>@emp.House</td>
+                    <td>@emp.Committee</td>
+                    <td>
+                        <a class="nav-link" href="EditCandidate/@emp.CandidateId">
+                            <span class="oi oi-pencil" aria-hidden="true">Edit</span>
+                        </a>
+                        <a class="nav-link" href="Delete/@emp.CandidateId">
+                            <span class="oi oi-trash" aria-hidden="true">Delete</span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    List<Candidate> _Candidates;
+    protected override async Task OnInitializedAsync()
+    {
+
+        _Candidates = await Task.Run(() => _service.GetCandidateAsync());
+    }
+
+}

@@ -1,0 +1,87 @@
+﻿@page "/AddCandidate"
+@using Election.Data
+@inject CandidatesController _services
+@inject NavigationManager NavigationManager
+<h3>Add Candidate</h3>
+<hr />
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="Name" class="control-label">Candidate Name</label>
+                <input form="Name" class="form-control" placeholder="Enter name of candidate" maxlength="40" @bind="@obj.CandidateName" />
+            </div>
+            <div class="form-group">
+                <label for="Class" class="control-label">Class</label>
+                <select @bind="@obj.Class" class="form-control" size="3">
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                 </select>
+            </div>
+            <div class="form-group">
+                <label for="Section" class="control-label">Section</label>
+                <select form="Section" class="form-control" @bind="@obj.Section">
+                    <option value="" selected>Select Section</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="AdmissionNumber" class="control-label">Admission Number</label>
+                <input form="AdmissionNumber" class="form-control" placeholder="Enter admission number" @bind="@obj.AdmNumber" />
+            </div>
+            <div class="form-group">
+                <label for="House" class="control-label">Select House</label>
+                <select @bind="@obj.House" class="form-control">
+                    <option value="" selected>Select House</option>
+                    <option value="Ajanta">Ajanta</option>
+                    <option value="Sanchi">Sanchi</option>
+                    <option value="Nalanda">Nalanda</option>
+                    <option value="Taxila">Taxila</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="Committee" class="control-label">Contesting For</label>
+                <select form="Committee" class="form-control" @bind="@obj.Committee">
+                    <option value="" selected>Select Committee</option>
+                    <option value="Literary">Literary Committee</option>
+                    <option value="Cultural">Cultural Committee</option>
+                    <option value="Discipline">Discipline Committee</option>
+                    <option value="Sports">Sports Committee</option>
+                    <option value="House">House Representative</option>
+                </select>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@CreateCandidate" value="Save" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    Candidate obj = new Candidate();
+    public async void CreateCandidate()
+    {
+        await _services.InsertCandidateAsync(obj);
+        NavigationManager.NavigateTo("Candidates");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("Candidates");
+    }
+}

@@ -1,0 +1,239 @@
+﻿@page "/ajanta"
+@using Election.Data
+@inject Data.ElectionContext _context
+@inject Data.VotesController _service
+@inject Data.CandidatesController _serviceCandidate
+@using Blazored.Toast
+@using Blazored.Toast.Services
+@inject IToastService toastService
+@inject NavigationManager NM
+
+<h3>Ajanta House</h3>
+<hr />
+
+@if ((_Candidates is null) && (x is null))
+{
+    <p><em>Loading... !</em></p>
+}
+else
+{
+<form onsubmit="return false">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Committee</th>
+                <th>Candidate Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>@LitCom</td>
+                <td>
+
+                    <select class="form-control" @bind="@CandidateName" disabled="@isdisabledlit">
+
+                        @foreach (var c in x)
+                        {
+                            <option value="@c.CandidateName">@c.CandidateName</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button disabled="@isdisabledlit" class="btn-primary btn-outline-success" aria-hidden="true" @onclick="VoteCandidateLit">Vote</button>
+                </td>
+            </tr>
+            <tr>
+                <td>@SportsCom</td>
+                <td>
+
+                    <select class="form-control" @bind="@CandidateName" disabled="@isdisabledsports">
+
+                        @foreach (var c in y)
+                        {
+                            <option value="@c.CandidateName">@c.CandidateName</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button disabled="@isdisabledsports" class="btn-primary btn-outline-success" aria-hidden="true" @onclick="VoteCandidateSports">Vote</button>
+                </td>
+            </tr>
+            <tr>
+                <td>@Cultural</td>
+                <td>
+
+                    <select class="form-control" @bind="@CandidateName" disabled="@isdisabledcult">
+
+                        @foreach (var c in w)
+                        {
+                            <option value="@c.CandidateName">@c.CandidateName</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button disabled="@isdisabledcult" class="btn-primary btn-outline-success" aria-hidden="true" @onclick="VoteCandidateCult">Vote</button>
+                </td>
+            </tr>
+            <tr>
+                <td>@disCom</td>
+                <td>
+
+                    <select class="form-control" @bind="@CandidateName" disabled="@isdisableddis">
+
+                        @foreach (var c in g)
+                        {
+                            <option value="@c.CandidateName">@c.CandidateName</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button disabled="@isdisableddis" class="btn-primary btn-outline-success" aria-hidden="true" @onclick="VoteCandidateDis">Vote</button>
+                </td>
+            </tr>
+            <tr>
+                <td>@HouseCommittee</td>
+                <td>
+
+                    <select class="form-control" @bind="@CandidateName" disabled="@isdisabledhs">
+
+                        @foreach (var c in h)
+                        {
+                            <option value="@c.CandidateName">@c.CandidateName</option>
+                        }
+                    </select>
+                </td>
+                <td>
+                    <button disabled="@isdisabledhs" class="btn-primary btn-outline-success" aria-hidden="true" @onclick="VoteCandidateHs">Vote</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+}
+
+@code {
+    List<Candidate> _Candidates;
+    string CandidateName = "Dummy";
+    string LitCom = "Literary";
+    string SportsCom = "Sports";
+    string disCom = "Discipline";
+    string House = "Dummy";
+    string Cultural = "Cultural";
+    string HouseCommittee = "House";
+    Vote vote = new Vote();
+    private readonly Random _random = new Random();
+    IEnumerable<Candidate> x,y,w,g,h;
+    bool isdisabledlit = false, isdisabledsports=false, isdisabledcult = false, isdisableddis=false, isdisabledhs=false;
+    protected override async Task OnInitializedAsync()
+    {
+
+        _Candidates = await Task.Run(() => _service.GetCandidateNameAsync());
+        x = await Task.Run(() => _Candidates.Where(C => C.Committee == "Literary" & C.House == "Ajanta"));
+        y= await Task.Run(() => _Candidates.Where(C => C.Committee == "Sports" & C.House == "Ajanta"));
+        w= await Task.Run(() => _Candidates.Where(C => C.Committee == "Cultural" & C.House == "Ajanta"));
+        g= await Task.Run(() => _Candidates.Where(C => C.Committee == "Discipline" & C.House == "Ajanta"));
+        h= await Task.Run(() => _Candidates.Where(C => C.Committee == "House" & C.House == "Ajanta"));
+    }
+
+    protected async Task VoteCandidateLit()
+    {
+
+        vote.CandidateName = CandidateName;
+        vote.House = "Ajanta";
+        vote.Committee = LitCom;
+        vote.VoteID=_random.Next();
+
+        if (vote.CandidateName == "Dummy") {
+            await Task.Run(() => toastService.ShowError("Please select a candidate!"));
+
+        }
+        else {
+            isdisabledlit = true;
+            await _service.InsertVoteAsync(vote);
+            await Task.Run(() => toastService.ShowSuccess("Successfully voted!"));
+        }
+    }
+    protected async Task VoteCandidateSports()
+    {
+        vote.CandidateName = CandidateName;
+        vote.House = "Ajanta";
+        vote.Committee = SportsCom;
+        vote.VoteID=_random.Next();
+
+        if (vote.CandidateName == "Dummy")
+        {
+            await Task.Run(() => toastService.ShowError("Please select a candidate!"));
+
+        }
+        else
+        {
+            isdisabledsports = true;
+            await _service.InsertVoteAsync(vote);
+            await Task.Run(() => toastService.ShowSuccess("Successfully voted!"));
+
+        }
+    }
+    protected async Task VoteCandidateCult()
+    {
+        vote.CandidateName = CandidateName;
+        vote.House = "Ajanta";
+        vote.Committee = Cultural;
+        vote.VoteID = _random.Next();
+
+        if (vote.CandidateName == "Dummy")
+        {
+            await Task.Run(() => toastService.ShowError("Please select a candidate!"));
+
+        }
+        else
+        {
+            isdisabledcult = true;
+            await _service.InsertVoteAsync(vote);
+            await Task.Run(() => toastService.ShowSuccess("Successfully voted!"));
+
+        }
+    }
+    protected async Task VoteCandidateDis()
+    {
+        vote.CandidateName = CandidateName;
+        vote.House = "Ajanta";
+        vote.Committee = disCom;
+        vote.VoteID = _random.Next();
+
+        if (vote.CandidateName == "Dummy")
+        {
+            await Task.Run(() => toastService.ShowError("Please select a candidate!"));
+
+        }
+        else
+        {
+            isdisableddis = true;
+            await _service.InsertVoteAsync(vote);
+            await Task.Run(() => toastService.ShowSuccess("Successfully voted!"));
+
+        }
+    }
+
+    protected async Task VoteCandidateHs()
+    {
+        vote.CandidateName = CandidateName;
+        vote.House = "Ajanta";
+        vote.Committee = HouseCommittee;
+        vote.VoteID = _random.Next();
+
+        if (vote.CandidateName == "Dummy")
+        {
+            await Task.Run(() => toastService.ShowError("Please select a candidate!"));
+
+        }
+        else
+        {
+            isdisabledhs = true;
+            await _service.InsertVoteAsync(vote);
+            await Task.Run(() => toastService.ShowSuccess("Successfully voted!"));
+
+        }
+    }
+}

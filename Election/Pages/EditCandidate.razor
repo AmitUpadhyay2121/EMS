@@ -1,0 +1,71 @@
+﻿@page "/EditCandidate/{Id}"
+@using Election.Data
+@inject CandidatesController _service
+@inject NavigationManager NavigationManager
+
+<h3>Edit Candidate</h3>
+<hr />
+
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="ID" class="control-label">Candidate ID</label>
+                <input form="ID" class="form-control" @bind="@obj.CandidateId" />
+            </div>
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input form="Name" class="form-control" @bind="@obj.CandidateName" />
+            </div>
+            <div class="form-group">
+                <label for="Class" class="control-label"></label>
+                <select @bind="@obj.Class" class="form-control">
+                    <option value="">-Select class</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="Section" class="control-label">Section</label>
+                <input form="Section" class="form-control" @bind="@obj.Section" />
+            </div>
+            <div class="form-group">
+                <label for="AdmNumber" class="control-label">Admission Number</label>
+                <input form="AdmNumber" class="form-control" @bind="@obj.AdmNumber" />
+            </div>
+            <div class="form-group">
+                <label for="Committee" class="control-label">Contesting For</label>
+                <input form="Committee" class="form-control" @bind="@obj.Committee" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@UpdateCandidate" value="Update" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    Candidate obj = new Candidate();
+    protected override async Task OnInitializedAsync()
+    {
+        obj = await Task.Run(() => _service.GetCandidateAsync(Convert.ToInt32(Id)));
+    }
+    protected async void UpdateCandidate()
+    {
+        await _service.UpdateCandidateAsync(obj);
+        NavigationManager.NavigateTo("Candidates");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("Candidates");
+    }
+}
